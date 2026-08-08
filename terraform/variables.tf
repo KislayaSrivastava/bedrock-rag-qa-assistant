@@ -19,7 +19,7 @@ variable "embed_model_id" {
 variable "gen_model_id" {
   description = "Bedrock model ID used for generation"
   type        = string
-  default     = "anthropic.claude-3-5-sonnet-20241022-v2:0"
+  default     = "anthropic.claude-sonnet-5"
 }
 
 variable "lambda_zip_path" {

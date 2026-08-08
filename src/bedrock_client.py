@@ -28,19 +28,17 @@ def embed_text(client, text: str) -> list[float]:
 
 
 def generate(client, prompt: str, max_tokens: int | None = None) -> str:
-    """Generate a response using the configured Claude-on-Bedrock model."""
-    body = json.dumps(
-        {
-            "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": max_tokens or settings.max_generation_tokens,
-            "messages": [{"role": "user", "content": prompt}],
-        }
-    )
-    response = client.invoke_model(
+    """Generate a response using the Bedrock Converse API.
+
+    Converse is a unified interface across model families (Anthropic Claude,
+    Amazon Nova, Meta Llama, etc.) -- unlike invoke_model, which expects a
+    different request/response JSON shape per provider. That means changing
+    BEDROCK_GEN_MODEL_ID in .env is enough to switch providers; this function
+    doesn't need to change.
+    """
+    response = client.converse(
         modelId=settings.gen_model_id,
-        body=body,
-        contentType="application/json",
-        accept="application/json",
+        messages=[{"role": "user", "content": [{"text": prompt}]}],
+        inferenceConfig={"maxTokens": max_tokens or settings.max_generation_tokens},
     )
-    payload = json.loads(response["body"].read())
-    return payload["content"][0]["text"]
+    return response["output"]["message"]["content"][0]["text"]

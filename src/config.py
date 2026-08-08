@@ -17,7 +17,7 @@ class Settings:
     # in your account/region before running. These defaults are a
     # reasonable starting point, not a guarantee of availability.
     embed_model_id: str = os.getenv("BEDROCK_EMBED_MODEL_ID", "amazon.titan-embed-text-v2:0")
-    gen_model_id: str = os.getenv("BEDROCK_GEN_MODEL_ID", "anthropic.claude-3-5-sonnet-20241022-v2:0")
+    gen_model_id: str = os.getenv("BEDROCK_GEN_MODEL_ID", "anthropic.claude-sonnet-5")
 
     # Ingestion
     data_dir: str = os.getenv("DATA_DIR", "data/sample_docs")

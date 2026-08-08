@@ -17,6 +17,12 @@ resource "aws_iam_role_policy" "bedrock_invoke" {
   name = "${var.function_name}-bedrock-invoke"
   role = aws_iam_role.lambda_exec.id
 
+  # Generation models (Claude, Nova) are invoked via inference profile, not
+  # directly by foundation-model ID -- see the "on-demand throughput isn't
+  # supported" error this project hit during setup. Inference profiles can
+  # route cross-region, so the underlying foundation-model permission is
+  # granted broadly (read-only invoke, no other actions) while the profile
+  # itself is scoped to the specific one this deployment uses.
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -25,7 +31,8 @@ resource "aws_iam_role_policy" "bedrock_invoke" {
         Action = ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"]
         Resource = [
           "arn:aws:bedrock:${var.aws_region}::foundation-model/${var.embed_model_id}",
-          "arn:aws:bedrock:${var.aws_region}::foundation-model/${var.gen_model_id}",
+          "arn:aws:bedrock:*::foundation-model/*",
+          "arn:aws:bedrock:${var.aws_region}:${data.aws_caller_identity.current.account_id}:inference-profile/${var.gen_model_id}",
         ]
       }
     ]
