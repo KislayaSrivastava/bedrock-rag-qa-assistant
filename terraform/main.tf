@@ -20,15 +20,21 @@ resource "aws_lambda_function" "rag_api" {
   timeout       = 30
   memory_size   = 512
 
-  filename         = var.lambda_zip_path
+  s3_bucket        = aws_s3_bucket.lambda_deploy.id
+  s3_key           = aws_s3_object.lambda_zip.key
   source_code_hash = filebase64sha256(var.lambda_zip_path)
 
   environment {
     variables = {
-      AWS_REGION_OVERRIDE     = var.aws_region
-      BEDROCK_EMBED_MODEL_ID  = var.embed_model_id
-      BEDROCK_GEN_MODEL_ID    = var.gen_model_id
-      CHROMA_PERSIST_DIR      = "/tmp/chroma_db"
+      AWS_REGION_OVERRIDE       = var.aws_region
+      BEDROCK_EMBED_MODEL_ID    = var.embed_model_id
+      BEDROCK_GEN_MODEL_ID      = var.gen_model_id
+      CHROMA_PERSIST_DIR        = "/tmp/chroma_db"
+      # Its gRPC-based exporter package is deliberately pruned from the
+      # deployment zip to fit Lambda's size limit -- disable the feature
+      # explicitly rather than relying on it silently failing to import.
+      CHROMA_ANONYMIZED_TELEMETRY = "false"
+      ANONYMIZED_TELEMETRY        = "false"
     }
   }
 }
