@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+.venv/
+
+# Env
+.env
+
+# Vector store data
+chroma_db/
+
+# Build artifacts
+build/
+*.zip
+
+# IDE
+.vscode/
+.idea/
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/.terraform.lock.hcl
+
+# OS
+.DS_Store
